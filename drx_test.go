@@ -53,7 +53,7 @@ func TestSimple(t *testing.T) {
 		},
 		{
 			name:     "BasicRepetition",
-			testRx:   drx.Build(drx.Bol, drx.ZeroOrMore(drx.Literal("hello"), false)),
+			testRx:   drx.Build(drx.Bol, drx.ZeroOrMore(false, drx.Literal("hello"))),
 			expected: "^hello*?",
 		},
 		{

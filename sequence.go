@@ -54,39 +54,39 @@ func (r *repetitionForm) String() string {
 	return s
 }
 
-func ZeroOrMore(rx Rx, greedy bool) Rx {
+func ZeroOrMore(greedy bool, rxs ...Rx) Rx {
 	return &repetitionForm{
-		rx:     rx,
+		rx:     implicitGroup(rxs...),
 		op:     opZeroOrMore,
 		greedy: greedy,
 	}
 }
 
-func OneOrMore(rx Rx, greedy bool) Rx {
+func OneOrMore(greedy bool, rxs ...Rx) Rx {
 	return &repetitionForm{
-		rx:     rx,
+		rx:     implicitGroup(rxs...),
 		op:     opOneOrMore,
 		greedy: greedy,
 	}
 }
 
-func ZeroOrOne(rx Rx, greedy bool) Rx {
+func ZeroOrOne(greedy bool, rxs ...Rx) Rx {
 	return &repetitionForm{
-		rx:     rx,
+		rx:     implicitGroup(rxs...),
 		op:     opZeroOrOne,
 		greedy: greedy,
 	}
 }
 
 type boundedRepetitionForm struct {
-	group  groupedForm
+	rx     Rx
 	min    int64
 	max    *int64
 	greedy bool
 }
 
-func (b boundedRepetitionForm) String() string {
-	s := fmt.Sprintf("%s{%d", b.group.String(), b.min)
+func (b *boundedRepetitionForm) String() string {
+	s := fmt.Sprintf("%s{%d", b.rx.String(), b.min)
 	// TODO: Need min or more
 	if b.max != nil {
 		s = fmt.Sprintf("%s,%d}", s, *b.max)
@@ -101,8 +101,8 @@ func (b boundedRepetitionForm) String() string {
 }
 
 func NTimes(n int64, greedy bool, rxs ...Rx) Rx {
-	return boundedRepetitionForm{
-		group:  implicitGroup(rxs...),
+	return &boundedRepetitionForm{
+		rx:     implicitGroup(rxs...),
 		min:    n,
 		greedy: greedy,
 	}
@@ -110,7 +110,7 @@ func NTimes(n int64, greedy bool, rxs ...Rx) Rx {
 
 func NtoMTimes(n int64, m int64, greedy bool, rxs ...Rx) Rx {
 	return &boundedRepetitionForm{
-		group:  implicitGroup(rxs...),
+		rx:     implicitGroup(rxs...),
 		min:    n,
 		max:    &m,
 		greedy: greedy,
