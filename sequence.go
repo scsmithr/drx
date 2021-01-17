@@ -18,6 +18,7 @@ func (c *compositeForm) String() string {
 	return strings.Join(elems, c.joinBy)
 }
 
+// And creates an Rx for matching all provided Rxs.
 func And(rxs ...Rx) Rx {
 	return &compositeForm{
 		rxs:    rxs,
@@ -25,6 +26,7 @@ func And(rxs ...Rx) Rx {
 	}
 }
 
+// Or creates an Rx for matching any Rxs, preferring to match left to right.
 func Or(rxs ...Rx) Rx {
 	return &compositeForm{
 		rxs:    rxs,
@@ -54,6 +56,8 @@ func (r *repetitionForm) String() string {
 	return s
 }
 
+// ZeroOrMore creates an Rx for matching zero or more Rxs. Rxs will be grouped
+// (non-capture).
 func ZeroOrMore(greedy bool, rxs ...Rx) Rx {
 	return &repetitionForm{
 		rx:     implicitGroup(rxs...),
@@ -62,6 +66,8 @@ func ZeroOrMore(greedy bool, rxs ...Rx) Rx {
 	}
 }
 
+// OneOrMore creates an Rx for matching one or more Rxs. Rxs will be grouped
+// (non-capture).
 func OneOrMore(greedy bool, rxs ...Rx) Rx {
 	return &repetitionForm{
 		rx:     implicitGroup(rxs...),
@@ -70,6 +76,8 @@ func OneOrMore(greedy bool, rxs ...Rx) Rx {
 	}
 }
 
+// ZeroOrOne creates an Rx for matching zero or one Rxs. Rxs will be grouped
+// (non-capture).
 func ZeroOrOne(greedy bool, rxs ...Rx) Rx {
 	return &repetitionForm{
 		rx:     implicitGroup(rxs...),
@@ -79,16 +87,18 @@ func ZeroOrOne(greedy bool, rxs ...Rx) Rx {
 }
 
 type boundedRepetitionForm struct {
-	rx     Rx
-	min    int64
-	max    *int64
-	greedy bool
+	rx           Rx
+	min          int64
+	max          *int64
+	unboundedMax bool
+	greedy       bool
 }
 
 func (b *boundedRepetitionForm) String() string {
 	s := fmt.Sprintf("%s{%d", b.rx.String(), b.min)
-	// TODO: Need min or more
-	if b.max != nil {
+	if b.unboundedMax {
+		s = fmt.Sprintf("%s,}", s)
+	} else if b.max != nil {
 		s = fmt.Sprintf("%s,%d}", s, *b.max)
 	} else {
 		s = s + "}"
@@ -100,19 +110,38 @@ func (b *boundedRepetitionForm) String() string {
 	return s
 }
 
+// NTimes creates an Rx for matching Rxs exactly n times. Rxs will be grouped
+// (non-capture).
 func NTimes(n int64, greedy bool, rxs ...Rx) Rx {
 	return &boundedRepetitionForm{
-		rx:     implicitGroup(rxs...),
-		min:    n,
-		greedy: greedy,
+		rx:           implicitGroup(rxs...),
+		min:          n,
+		max:          nil,
+		unboundedMax: false,
+		greedy:       greedy,
 	}
 }
 
+// NOrMoreTimes creates an Rx for matching Rxs n or more times. Rxs will be
+// grouped (non-capture).
+func NOrMoreTimes(n int64, greedy bool, rxs ...Rx) Rx {
+	return &boundedRepetitionForm{
+		rx:           implicitGroup(rxs...),
+		min:          n,
+		max:          nil,
+		unboundedMax: true,
+		greedy:       greedy,
+	}
+}
+
+// NTimes creates an Rx for matching Rxs n to m times. Rxs will be grouped
+// (non-capture).
 func NtoMTimes(n int64, m int64, greedy bool, rxs ...Rx) Rx {
 	return &boundedRepetitionForm{
-		rx:     implicitGroup(rxs...),
-		min:    n,
-		max:    &m,
-		greedy: greedy,
+		rx:           implicitGroup(rxs...),
+		min:          n,
+		max:          &m,
+		unboundedMax: false,
+		greedy:       greedy,
 	}
 }

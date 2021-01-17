@@ -10,12 +10,17 @@ func (l literalForm) String() string {
 	return l.literal
 }
 
+// Literal creates an Rx for the literal string. No escaping is done.
 func Literal(s string) Rx {
 	return literalForm{
 		literal: s,
 	}
 }
 
+// QuoteLiteral creates an Rx that will match the literal string, escaping all
+// regex meta characters.
+//
+// See https://golang.org/pkg/regexp/#QuoteMeta for more details.
 func QuoteLiteral(s string) Rx {
 	return literalForm{
 		literal: regexp.QuoteMeta(s),
@@ -64,6 +69,7 @@ func (c characterClassForm) String() string {
 	return "[" + c.charset + "]"
 }
 
+// Charset creates an Rx for for matching any character in the provided charset.
 func Charset(charset string) Rx {
 	return characterClassForm{
 		charset: charset,
@@ -71,6 +77,8 @@ func Charset(charset string) Rx {
 	}
 }
 
+// NotCharset creates an Rx for for matching any character not in the provided
+// charset.
 func NotCharset(charset string) Rx {
 	return characterClassForm{
 		charset: charset,

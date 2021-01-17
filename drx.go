@@ -6,7 +6,11 @@ import (
 	"strings"
 )
 
+// Rx is the primary interface for building a regex string. Anything that emits
+// a valid regex string can be used to declaratively build up a regex.
 type Rx interface {
+	// String returns a regex string for using with the various regexp package
+	// compile functions.
 	String() string
 }
 
@@ -36,6 +40,7 @@ func (b builder) String() string {
 	return sb.String()
 }
 
+// Build builds up a single Rx from multiple potentially nested Rxs.
 func Build(rxs ...Rx) Rx {
 	return builder{
 		rxs: rxs,

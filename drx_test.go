@@ -70,6 +70,17 @@ func TestSimple(t *testing.T) {
 			expected: "^(?:hello[[:space:]]world){3,5}$",
 		},
 		{
+			name: "BasicNOrMoreTimes",
+			testRx: drx.Build(
+				drx.NOrMoreTimes(3, true,
+					drx.Literal("hello"),
+					drx.Space,
+					drx.Literal("world"),
+				),
+			),
+			expected: "(?:hello[[:space:]]world){3,}",
+		},
+		{
 			name: "BasicCapture",
 			testRx: drx.Build(
 				drx.Capture(
@@ -81,6 +92,20 @@ func TestSimple(t *testing.T) {
 				),
 			),
 			expected: "(cat|dog|mouse)",
+		},
+		{
+			name: "BasicNamedCapture",
+			testRx: drx.Build(
+				drx.NamedCapture(
+					"pet",
+					drx.Or(
+						drx.Literal("cat"),
+						drx.Literal("dog"),
+						drx.Literal("mouse"),
+					),
+				),
+			),
+			expected: "(?P<pet>cat|dog|mouse)",
 		},
 	}
 

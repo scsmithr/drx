@@ -1,6 +1,6 @@
 # drx
 
-`drx` is a Go library for decalaratively building regular expressions.
+`drx` is a Go library for declaratively building regular expressions.
 
 ## Example
 
