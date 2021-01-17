@@ -1,4 +1,4 @@
-# drx
+# drx [![Go Reference](https://pkg.go.dev/badge/github.com/scsmithr/drx.svg)](https://pkg.go.dev/github.com/scsmithr/drx)
 
 `drx` is a Go library for declaratively building regular expressions.
 
