@@ -54,7 +54,7 @@ func TestSimple(t *testing.T) {
 		{
 			name:     "BasicRepetition",
 			testRx:   drx.Build(drx.Bol, drx.ZeroOrMore(false, drx.Literal("hello"))),
-			expected: "^hello*?",
+			expected: "^(?:hello)*?",
 		},
 		{
 			name: "BasicNtoMTimes",

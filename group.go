@@ -58,8 +58,5 @@ func Group(rxs ...Rx) Rx {
 }
 
 func implicitGroup(rxs ...Rx) Rx {
-	if len(rxs) == 1 {
-		return rxs[0]
-	}
 	return Group(rxs...)
 }
